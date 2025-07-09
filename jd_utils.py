@@ -115,17 +115,21 @@ def extract_with_tools(url):
 # ----------------------------------------
 def extract_job_description(url):
     hostname = urlparse(url).hostname or ""
+    extractors = {
+        "linkedin.com": extract_linkedin_with_goose,
+        "indeed.com": extract_indeed,
+        "naukri.com": extract_naukri,
+        "foundit": extract_foundit,
+        "monsterindia": extract_foundit,
+    }
+    for key, func in extractors.items():
+        if key in hostname:
+            result = func(url)
+            return result if result else "JD extraction failed or unsupported URL."
 
-    if "linkedin.com" in hostname:
-        return extract_linkedin_with_goose(url)
-    elif "indeed.com" in hostname:
-        return extract_indeed(url)
-    elif "naukri.com" in hostname:
-        return extract_naukri(url)
-    elif "foundit" in hostname or "monsterindia" in hostname:
-        return extract_foundit(url)
-    else:
-        return extract_with_tools(url)
+    result = extract_with_tools(url)
+    return result if result else "JD extraction failed or unsupported URL."
+
 
 # ----------------------------------------
 # 🧪 Run Script

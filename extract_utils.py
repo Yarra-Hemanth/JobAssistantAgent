@@ -1,33 +1,41 @@
-# extract_utils.py
 import docx2txt
-# import textract
 import fitz  # PyMuPDF
+import asyncio
 
-def extract_text_from_pdf(file):
+async def extract_text_from_pdf(file):
     try:
-        doc = fitz.open(stream=file.read(), filetype="pdf")
+        file_bytes = await file.read()
+        doc = fitz.open(stream=file_bytes, filetype="pdf")
         return "\n".join([page.get_text() for page in doc])
     except:
         return "Failed to extract PDF text."
 
+
 def extract_text_from_docx(file):
-    return docx2txt.process(file)
+    try:
+        return docx2txt.process(file)
+    except:
+        return "Failed to extract DOCX text."
 
 def extract_text_from_txt(file):
-    return file.read().decode('utf-8')
+    try:
+        return file.read().decode('utf-8')
+    except:
+        return "Failed to extract TXT text."
 
 
-def extract_resume(uploaded_file):
+async def extract_resume(uploaded_file):
     if uploaded_file is None:
         return "No file uploaded."
 
-    file_name = uploaded_file.name.lower()
+    file_name = uploaded_file.filename.lower()
 
     if file_name.endswith('.pdf'):
-        return extract_text_from_pdf(uploaded_file)
+        return await extract_text_from_pdf(uploaded_file)
     elif file_name.endswith('.docx'):
         return extract_text_from_docx(uploaded_file)
     elif file_name.endswith('.txt'):
         return extract_text_from_txt(uploaded_file)
     else:
         return "Unsupported resume format"
+

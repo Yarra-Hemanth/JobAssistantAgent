@@ -4,6 +4,13 @@ from pydantic import BaseModel
 from resume_utils import score_resume, answer_question
 from jd_utils import extract_job_description
 from extract_utils import extract_resume
+from fastapi import APIRouter
+
+session_data = {
+    "resume_text": None,
+    "jd_text": None
+}
+
 
 app = FastAPI()
 
@@ -17,33 +24,54 @@ class QuestionRequest(BaseModel):
     resume_text: str
     question: str
 
-# ✅ Existing endpoint 1: Score resume
-@app.post("/score-resume")
-def score(resume_req: ResumeRequest):
-    result = score_resume(resume_req.jd_text, resume_req.resume_text)
-    return {"result": result}
 
-# ✅ Existing endpoint 2: Answer JD question
-@app.post("/answer-question")
-def answer(req: QuestionRequest):
-    answer = answer_question(req.jd_text, req.resume_text, req.question)
-    return {"answer": answer}
-
-# ✅ New endpoint 3: Upload resume file + JD URL
-@app.post("/score-from-inputs")
-async def score_from_inputs(
+@app.post("/upload-inputs")
+async def upload_inputs(
     resume_file: UploadFile = File(...),
-    jd_url: str = Form(...)
+    jd_url: str = Form(...),
+    jd_manual: str = Form("")
 ):
-    # Extract from file
-    resume_text = extract_resume(resume_file)
-
-    # Extract from URL
+    resume_text = await extract_resume(resume_file)
     jd_text = extract_job_description(jd_url)
 
-    # Basic error handling
-    if "Unsupported" in resume_text or "Error" in jd_text:
-        return JSONResponse(status_code=400, content={"error": "Invalid file or URL"})
+    if not jd_text or "Error" in jd_text or len(jd_text.strip()) < 20:
+        if not jd_manual or len(jd_manual.strip()) < 20:
+            return JSONResponse(
+                status_code=400,
+                content={"error": "Unable to extract JD from URL. Please provide JD manually."}
+            )
+        jd_text = jd_manual
 
-    result = score_resume(jd_text, resume_text)
-    return {"result": result}
+    session_data["resume_text"] = resume_text
+    session_data["jd_text"] = jd_text
+
+    return {"message": "✅ Resume and JD successfully uploaded and stored."}
+
+
+@app.post("/score-resume")
+def score_from_session():
+    if not session_data.get("resume_text") or not session_data.get("jd_text"):
+        return JSONResponse(status_code=400, content={"error": "Missing resume or JD. Please upload them first via /upload-inputs."})
+
+    result = score_resume(session_data["jd_text"], session_data["resume_text"])
+    
+    if isinstance(result, dict) and "error" in result:
+        return JSONResponse(status_code=500, content=result)
+    
+    return JSONResponse(status_code=200, content={"result": result})
+
+
+class Question(BaseModel):
+    question: str
+
+@app.post("/answer-question")
+def answer_from_session(q: Question):
+    if not session_data.get("resume_text") or not session_data.get("jd_text"):
+        return JSONResponse(status_code=400, content={"error": "Missing resume or JD. Please upload them first via /upload-inputs."})
+
+    answer = answer_question(session_data["jd_text"], session_data["resume_text"], q.question)
+
+    if isinstance(answer, dict) and "error" in answer:
+        return JSONResponse(status_code=500, content=answer)
+
+    return JSONResponse(status_code=200, content=answer)
