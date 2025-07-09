@@ -1,5 +1,11 @@
 from models.groq_client import client
+# from models.groq_client import ask_groq
 from extract_utils import extract_resume
+# from jd_utils import scrape_jd_from_url
+
+# resume_text = extract_resume("path/to/resume.pdf")
+# jd_text = scrape_jd_from_url("https://somejobsite.com/job/123")
+
 import json
 import re
 
@@ -73,21 +79,9 @@ def answer_question(jd_text, resume_text, question):
             model="mistral-saba-24b",
             messages=[{"role": "user", "content": prompt}]
         )
-        
-        content = response.choices[0].message.content.strip()
-        print("Raw model output:", content)  # Debugging output (optional)
-
-        # Extract JSON or the core answer (if necessary)
-        json_match = re.search(r'\{.*\}', content, re.DOTALL)
-        if json_match:
-            parsed = json.loads(json_match.group())
-            if "answer" in parsed:
-                return {"answer": parsed["answer"]}
-            else:
-                return {"error": "Invalid JSON structure in the model response."}
-        else:
-            return {"error": "No valid answer found in the model response."}
-
+        return {
+            "answer": response.choices[0].message.content.strip()
+        }
     except Exception as e:
         return {
             "error": f"Exception occurred: {str(e)}"
