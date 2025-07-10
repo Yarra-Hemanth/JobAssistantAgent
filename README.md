@@ -5,7 +5,7 @@ An AI-powered resume evaluation and job description analysis tool built with Fas
 ## 🚀 Features
 
 - ✅ Upload resume (`PDF`, `DOCX`, `TXT`) and job description via URL or manual input
-- ✅ Intelligent resume scoring using LLMs (LLaMA 3 & Mistral)
+- ✅ Intelligent resume scoring using LLM (Mistral)
 - ✅ Application question answering based on resume and JD
 - ✅ Web scraping from popular job portals (LinkedIn, Indeed, Naukri, etc.)
 - ✅ Supports fallback extraction using Goose, Newspaper3k, Readability
@@ -51,50 +51,49 @@ uvicorn app:app --reload  # Here the initial app indicates the app.py file.
 Visit http://127.0.0.1:8000/docs to access the Swagger API documentation.
 
 📬 API Endpoints
-1. /upload-inputs – Upload resume and JD
-Method: POST (multipart/form-data)
-Parameters:  
+1. /upload-inputs – Upload resume and JD  
+Method: POST (multipart/form-data)  
+Parameters:   
 resume_file: Resume file (PDF, DOCX, or TXT)  
 jd_url: (Optional) URL of the job description  
 jd_manual: (Optional) Manual JD text (fallback)  
 
-2. /score-resume – Score based on last uploaded resume and JD
-Method: POST
-Response:
-{  
+2. /score-resume – Score based on last uploaded resume and JD  
+Method: POST  
+Response:  
+{   
   "score": 85,  
   "suggestions": ["Add metrics", "Highlight Python projects"]  
-}
+}  
 
-3. /answer-question – Answer a job application question
-Method: POST
-Body:
-{  
-  "question": "Why do you want to work with us?"  
-}
+3. /answer-question – Answer a job application question  
+Method: POST  
+Body:  
+{    
+  "question": "Why do you want to work with us?"   
+}  
 
-🧠 Powered by
-FastAPI  
-GROQ  
-LLaMA 3  
-Mistral  
-Selenium + undetected_chromedriver  
-Newspaper3k  
-Readability  
-Goose3
+🧠 Powered by  
+    FastAPI  
+    GROQ    
+    Mistral  
+    Selenium + undetected_chromedriver   
+    Newspaper3k   
+    Readability  
+    Goose3  
 
-📌 To-Do
- Add frontend UI (React or Streamlit)
- Add authentication (JWT/session-based)
- Improve resume parsing with NLP
- Dockerize the project for deployment
+📌 To-Do  
+ Add frontend UI (React or Streamlit)  
+ Add authentication (JWT/session-based)  
+ Improve resume parsing with NLP  
+ Dockerize the project for deployment  
 
-🤝 Contributing
-Pull requests are welcome! Please open an issue first to discuss what you'd like to change.
+🤝 Contributing  
+Pull requests are welcome! Please open an issue first to discuss what you'd like to change.  
 
-🛡 License
-This project is licensed under the MIT License.
+🛡 License  
+This project is licensed under the MIT License.  
 
-🙋‍♂️ Author
-Hemanth Yarra
-LinkedIn | GitHub
+🙋‍♂️ Author  
+Hemanth Yarra  
+LinkedIn | GitHub  
