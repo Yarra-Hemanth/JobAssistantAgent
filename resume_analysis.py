@@ -49,7 +49,7 @@ def score_resume(jd_text, resume_text):
 
     try:
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="mistral-saba-24b",
             messages=[{"role": "user", "content": prompt}]
         )
         content = response.choices[0].message.content.strip()
