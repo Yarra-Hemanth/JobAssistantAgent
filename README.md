@@ -96,4 +96,4 @@ This project is licensed under the MIT License.
 
 🙋‍♂️ Author  
 Hemanth Yarra  
-LinkedIn | GitHub  
+[LinkedIn](https://www.linkedin.com/in/hemanth-yarra-5a1775305/) | [GitHub](https://github.com/Yarra-Hemanth)  
