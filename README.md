@@ -45,8 +45,8 @@ Download undetected-chromedriver and ensure Chrome is installed on your system.
 📎 **Note:** Error handling and setup instructions for ChromeDriver are provided in [`ChromeDriver_Setup_Guide.md`](./ChromeDriver_Setup_Guide.md).
 
 
-▶️ Running the App
-uvicorn app:app --reload  # Here the initial app indicates the app.py file.
+▶️ Running the App  
+uvicorn app:app --reload  # Here the initial app indicates the app.py file.  
 
 Visit http://127.0.0.1:8000/docs to access the Swagger API documentation.
 
