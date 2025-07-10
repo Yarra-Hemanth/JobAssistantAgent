@@ -15,7 +15,7 @@ An AI-powered resume evaluation and job description analysis tool built with Fas
 
 ## 📁 Project Structure
 
-JobAssistantAgent/
+JobAssistantAgent/  
 ├── app.py # FastAPI backend with endpoints  
 ├── resume_analysis.py # Resume scoring and QA logic  
 ├── jd_extraction.py # Job description scraping/extraction  
