@@ -4,7 +4,7 @@ import json
 import re
 
 def is_jd_valid(jd_text):
-    if not jd_text or len(jd_text.split()) < 75:
+    if not jd_text or len(jd_text.split()) < 20:
         return False
     if any(kw in jd_text.lower() for kw in [
         "cloudflare", "security service", "this website is using a security service",
