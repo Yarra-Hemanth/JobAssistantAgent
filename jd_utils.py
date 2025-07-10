@@ -49,12 +49,40 @@ def extract_indeed(url):
     return None
 
 def extract_naukri(url):
-    soup = selenium_extract(url, By.CLASS_NAME, "jd-wrapper")
-    if soup:
-        block = soup.find("div", class_="jd-wrapper")
-        if block:
-            return block.get_text(separator="\n").strip()
-    return None
+    try:
+        options = uc.ChromeOptions()
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        options.add_argument("--disable-blink-features=AutomationControlled")
+        options.add_argument("--start-maximized")
+
+        driver = uc.Chrome(options=options)
+        driver.get(url)
+
+        # Wait and scroll for dynamic content to load
+        time.sleep(3)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
+
+        # Try multiple selectors
+        jd_element = WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((
+                By.XPATH,
+                "//section[contains(@class, 'job-desc')] | //div[contains(@class, 'dang-inner-html')]"
+            ))
+        )
+        jd_text = jd_element.text.strip()
+        driver.quit()
+
+        return jd_text if jd_text else None
+    except Exception as e:
+        print("❌ Naukri JD extraction failed:", e)
+        try:
+            driver.quit()
+        except:
+            pass
+        return None
+
 
 def extract_foundit(url):
     soup = selenium_extract(url, By.ID, "JobDescription")

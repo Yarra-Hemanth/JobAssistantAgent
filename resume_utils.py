@@ -1,36 +1,51 @@
 from models.groq_client import client
-# from models.groq_client import ask_groq
 from extract_utils import extract_resume
-# from jd_utils import scrape_jd_from_url
-
-# resume_text = extract_resume("path/to/resume.pdf")
-# jd_text = scrape_jd_from_url("https://somejobsite.com/job/123")
-
 import json
 import re
+
+def is_jd_valid(jd_text):
+    if not jd_text or len(jd_text.split()) < 75:
+        return False
+    if any(kw in jd_text.lower() for kw in [
+        "cloudflare", "security service", "this website is using a security service",
+        "slide 1 of", "blocked", "invalid request", "access denied"
+    ]):
+        return False
+    return True
 
 def score_resume(jd_text, resume_text):
     if not jd_text or not resume_text:
         return {"error": "Invalid input. JD and Resume text must be provided."}
 
+    if not is_jd_valid(jd_text):
+        return {
+            "score": 0,
+            "suggestions": ["Invalid JD. Please enter the JD manually or use another link."]
+        }
+
     prompt = f"""
-    You are a job assistant. Compare the following resume with the job description.
-    Return **only** a valid JSON object with two keys:
-    - "score": an integer between 0 and 100
-    - "suggestions": an array of strings
+            You are a job assistant. Compare the following resume with the job description.
 
-    Format:
-    {{
-      "score": 85,
-      "suggestions": ["Add metrics", "Highlight Python projects"]
-    }}
+            If the job description appears suspicious or incomplete (e.g., marketing text, empty content, or bot protection messages),
+            assign a lower score (e.g., 10–30) and explain why in the suggestions.
+            Otherwise, score the resume normally based on its match to the JD.
 
-    Resume:
-    {resume_text}
+            Return **only** a valid JSON object with two keys:
+            - "score": an integer between 0 and 100
+            - "suggestions": an array of strings
 
-    Job Description:
-    {jd_text}
-    """
+            Format:
+            {{
+            "score": 85,
+            "suggestions": ["Add metrics", "Highlight Python projects"]
+            }}
+
+            Resume:
+            {resume_text}
+
+            Job Description:
+            {jd_text}
+            """
 
     try:
         response = client.chat.completions.create(
@@ -38,9 +53,8 @@ def score_resume(jd_text, resume_text):
             messages=[{"role": "user", "content": prompt}]
         )
         content = response.choices[0].message.content.strip()
-        print("🧠 Raw model output:", content)
+        print("🧐 Raw model output:", content)
 
-        # Extract the first JSON object from the text
         json_match = re.search(r'\{.*\}', content, re.DOTALL)
         if json_match:
             parsed = json.loads(json_match.group())
@@ -54,25 +68,24 @@ def score_resume(jd_text, resume_text):
     except Exception as e:
         return {"error": f"Exception occurred: {str(e)}"}
 
-
 def answer_question(jd_text, resume_text, question):
     if not jd_text or not resume_text or not question:
         return {"error": "JD, resume, and question must all be provided."}
 
     prompt = f"""
-    You are an expert career coach. Based on the following resume and job description, write a compelling, concise, and personalized answer to the application question. Use a professional yet enthusiastic tone.
+        You are an expert career coach. Based on the following resume and job description, write a compelling, concise, and personalized answer to the application question. Use a professional yet enthusiastic tone.
 
-    Resume:
-    {resume_text}
+        Resume:
+        {resume_text}
 
-    Job Description:
-    {jd_text}
+        Job Description:
+        {jd_text}
 
-    Application Question:
-    {question}
+        Application Question:
+        {question}
 
-    Your Answer:
-    """
+        Your Answer:
+        """
 
     try:
         response = client.chat.completions.create(

@@ -28,13 +28,16 @@ class QuestionRequest(BaseModel):
 @app.post("/upload-inputs")
 async def upload_inputs(
     resume_file: UploadFile = File(...),
-    jd_url: str = Form(...),
-    jd_manual: str = Form("")
+    jd_url: str = Form(None),            # ✅ now optional
+    jd_manual: str = Form("")            # optional as before
 ):
     resume_text = await extract_resume(resume_file)
-    jd_text = extract_job_description(jd_url)
 
-    if not jd_text or "Error" in jd_text or len(jd_text.strip()) < 20:
+    jd_text = extract_job_description(jd_url) if jd_url else ""
+
+    from resume_utils import is_jd_valid
+
+    if not is_jd_valid(jd_text):
         if not jd_manual or len(jd_manual.strip()) < 20:
             return JSONResponse(
                 status_code=400,
@@ -46,6 +49,7 @@ async def upload_inputs(
     session_data["jd_text"] = jd_text
 
     return {"message": "✅ Resume and JD successfully uploaded and stored."}
+
 
 
 @app.post("/score-resume")
