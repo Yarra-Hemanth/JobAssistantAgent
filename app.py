@@ -1,10 +1,12 @@
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from resume_utils import score_resume, answer_question
-from jd_utils import extract_job_description
-from extract_utils import extract_resume
-from fastapi import APIRouter
+from resume_analysis import score_resume, answer_question
+from jd_extraction import extract_job_description
+from file_extractors import extract_resume
+from resume_analysis import is_jd_valid
+
+# from fastapi import APIRouter
 
 session_data = {
     "resume_text": None,
@@ -34,8 +36,6 @@ async def upload_inputs(
     resume_text = await extract_resume(resume_file)
 
     jd_text = extract_job_description(jd_url) if jd_url else ""
-
-    from resume_utils import is_jd_valid
 
     if not is_jd_valid(jd_text):
         if not jd_manual or len(jd_manual.strip()) < 20:

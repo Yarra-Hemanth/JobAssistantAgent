@@ -1,5 +1,5 @@
 from models.groq_client import client
-from extract_utils import extract_resume
+from file_extractors import extract_resume
 import json
 import re
 
@@ -53,7 +53,7 @@ def score_resume(jd_text, resume_text):
             messages=[{"role": "user", "content": prompt}]
         )
         content = response.choices[0].message.content.strip()
-        print("🧐 Raw model output:", content)
+        print("Raw model output:", content)
 
         json_match = re.search(r'\{.*\}', content, re.DOTALL)
         if json_match:
