@@ -30,85 +30,63 @@ JobAssistantAgent/
 ## 🔧 Installation
 
 ### 1. Clone the repository
-git clone https://github.com/Yarra-Hemanth/JobAssistantAgent.git
+git clone https://github.com/Yarra-Hemanth/JobAssistantAgent.git  
 cd JobAssistantAgent
 
-2. Create and activate a virtual environment
-python -m venv venv
+### 2. Create and activate a virtual environment
+python -m venv venv  
 source venv/bin/activate    # On Windows: venv\Scripts\activate
 
-3. Install dependencies
-  pip install -r requirements.txt
-4. Install ChromeDriver (required for JD extraction)
+### 3. Install dependencies
+  pip install -r requirements.txt  
+  
+### 4. Install ChromeDriver (⚠ Required for JD extraction from URL)
 Download undetected-chromedriver and ensure Chrome is installed on your system.
+📎 **Note:** Error handling and setup instructions for ChromeDriver are provided in [`ChromeDriver_Setup_Guide.md`](./ChromeDriver_Setup_Guide.md).
+
 
 ▶️ Running the App
-uvicorn app:app --reload
-Here the initial app indicates the app.py file.
+uvicorn app:app --reload  # Here the initial app indicates the app.py file.
 
 Visit http://127.0.0.1:8000/docs to access the Swagger API documentation.
 
 📬 API Endpoints
 1. /upload-inputs – Upload resume and JD
 Method: POST (multipart/form-data)
-
-Parameters:
-
-resume_file: Resume file (PDF, DOCX, or TXT)
-
-jd_url: (Optional) URL of the job description
-
-jd_manual: (Optional) Manual JD text (fallback)
+Parameters:  
+resume_file: Resume file (PDF, DOCX, or TXT)  
+jd_url: (Optional) URL of the job description  
+jd_manual: (Optional) Manual JD text (fallback)  
 
 2. /score-resume – Score based on last uploaded resume and JD
 Method: POST
-
 Response:
-
-json
-Copy
-Edit
-{
-  "score": 85,
-  "suggestions": ["Add metrics", "Highlight Python projects"]
+{  
+  "score": 85,  
+  "suggestions": ["Add metrics", "Highlight Python projects"]  
 }
 
 3. /answer-question – Answer a job application question
 Method: POST
-
 Body:
-
-json
-Copy
-Edit
-{
-  "question": "Why do you want to work with us?"
+{  
+  "question": "Why do you want to work with us?"  
 }
 
 🧠 Powered by
-FastAPI
-
-GROQ
-
-LLaMA 3
-
-Mistral
-
-Selenium + undetected_chromedriver
-
-Newspaper3k
-
-Readability
-
+FastAPI  
+GROQ  
+LLaMA 3  
+Mistral  
+Selenium + undetected_chromedriver  
+Newspaper3k  
+Readability  
 Goose3
 
 📌 To-Do
  Add frontend UI (React or Streamlit)
-
  Add authentication (JWT/session-based)
-
  Improve resume parsing with NLP
-
  Dockerize the project for deployment
 
 🤝 Contributing
